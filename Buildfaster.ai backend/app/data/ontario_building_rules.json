@@ -1,0 +1,40 @@
+[
+  {
+    "category": "zoning",
+    "rule": "Max Height",
+    "limit": 10,
+    "description": "Maximum allowed building height is 10",
+    "id": "Z-01"
+  },
+  {
+    "category": "zoning",
+    "rule": "Max Unit Density",
+    "limit": 4,
+    "description": "Maximum number of units allowed is 4",
+    "id": "Z-02"
+  },
+  {
+    "category": "zoning",
+    "rule": "Min Lot Width",
+    "limit": 15,
+    "description": "Minimum lot width must be at least 15",
+    "id": "Z-03"
+  },
+  {
+    "category": "zoning",
+    "rule": "Min Lot Depth",
+    "limit": 30,
+    "description": "Minimum lot depth must be at least 30",
+    "id": "Z-04"
+  },
+  {
+    "category": "compliance",
+    "rule": "All residential stairs must have a continuous handrail.",
+    "id": "C-01"
+  },
+  {
+    "category": "compliance",
+    "rule": "Wheelchair ramps must have a maximum slope of 1:12.",
+    "id": "C-02"
+  }
+]
