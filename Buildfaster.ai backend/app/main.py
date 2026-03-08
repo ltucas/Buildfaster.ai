@@ -1,5 +1,6 @@
 import uuid
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from app.services.blueprint_parser import parse_blueprint
@@ -8,6 +9,15 @@ from app.agents.compliance_agent import analyze_compliance
 from app.agents.diplomat_agent import generate_suggestions
 
 app = FastAPI(title="BuildFaster.ai Multi-Agent Backend")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Mount a static folder to serve 3D models to the frontend viewer
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
