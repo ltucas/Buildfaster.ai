@@ -211,4 +211,4 @@ Developer 2 – Frontend & Product
 
 BuildFaster.ai aims to become the AI compliance layer for construction.
 
-If Canada needs millions of new homes, we must modernize how they get approved.
+If Canada needs millions of new homes, we must modernize how they get approved.# Buildfaster.ai
