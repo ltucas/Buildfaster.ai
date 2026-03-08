@@ -1,27 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BuildFaster.ai — AI-Powered Building Compliance</title>
-  <meta name="description" content="BuildFaster.ai streamlines building permit review with AI agents that check zoning, compliance, and provide actionable suggestions." />
+  <meta name="description"
+    content="BuildFaster.ai streamlines building permit review with AI agents that check zoning, compliance, and provide actionable suggestions." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <!-- 3D Model Viewer Library -->
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <!-- PDF.js for 2D Blueprint Viewer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
+
 <body>
+
+  <!-- ───────── INTRO ANIMATION ───────── -->
+  <div class="intro-overlay" id="introOverlay">
+    <!-- Blueprint Grid Background -->
+    <div class="intro-grid"></div>
+
+    <!-- Scanning beam -->
+    <div class="intro-scanline"></div>
+
+    <!-- Blueprint Building SVG -->
+    <div class="intro-blueprint">
+      <svg class="intro-building" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Foundation -->
+        <line class="bp-line bp-foundation" x1="50" y1="250" x2="350" y2="250" stroke="currentColor" stroke-width="2" />
+
+        <!-- Left wall -->
+        <line class="bp-line bp-wall-l" x1="80" y1="250" x2="80" y2="100" stroke="currentColor" stroke-width="1.5" />
+        <!-- Right wall -->
+        <line class="bp-line bp-wall-r" x1="320" y1="250" x2="320" y2="100" stroke="currentColor" stroke-width="1.5" />
+
+        <!-- Roof -->
+        <polyline class="bp-line bp-roof" points="60,100 200,30 340,100" stroke="currentColor" stroke-width="2"
+          stroke-linejoin="round" />
+
+        <!-- Floor lines -->
+        <line class="bp-line bp-floor1" x1="80" y1="180" x2="320" y2="180" stroke="currentColor" stroke-width="0.8"
+          stroke-dasharray="6 4" />
+        <line class="bp-line bp-floor2" x1="80" y1="140" x2="320" y2="140" stroke="currentColor" stroke-width="0.8"
+          stroke-dasharray="6 4" />
+
+        <!-- Windows Row 1 -->
+        <rect class="bp-line bp-win1" x="110" y="195" width="30" height="35" rx="2" stroke="currentColor"
+          stroke-width="1" />
+        <rect class="bp-line bp-win2" x="185" y="195" width="30" height="35" rx="2" stroke="currentColor"
+          stroke-width="1" />
+        <rect class="bp-line bp-win3" x="260" y="195" width="30" height="35" rx="2" stroke="currentColor"
+          stroke-width="1" />
+
+        <!-- Windows Row 2 -->
+        <rect class="bp-line bp-win4" x="110" y="150" width="30" height="22" rx="2" stroke="currentColor"
+          stroke-width="1" />
+        <rect class="bp-line bp-win5" x="185" y="150" width="30" height="22" rx="2" stroke="currentColor"
+          stroke-width="1" />
+        <rect class="bp-line bp-win6" x="260" y="150" width="30" height="22" rx="2" stroke="currentColor"
+          stroke-width="1" />
+
+        <!-- Windows Row 3 -->
+        <rect class="bp-line bp-win7" x="110" y="108" width="30" height="22" rx="2" stroke="currentColor"
+          stroke-width="1" />
+        <rect class="bp-line bp-win8" x="185" y="108" width="30" height="22" rx="2" stroke="currentColor"
+          stroke-width="1" />
+        <rect class="bp-line bp-win9" x="260" y="108" width="30" height="22" rx="2" stroke="currentColor"
+          stroke-width="1" />
+
+        <!-- Door -->
+        <rect class="bp-line bp-door" x="180" y="220" width="40" height="30" rx="2" stroke="currentColor"
+          stroke-width="1.5" />
+
+        <!-- Dimension lines -->
+        <line class="bp-line bp-dim1" x1="50" y1="265" x2="350" y2="265" stroke="currentColor" stroke-width="0.5"
+          opacity="0.4" />
+        <line class="bp-line bp-dim2" x1="50" y1="262" x2="50" y2="268" stroke="currentColor" stroke-width="0.5"
+          opacity="0.4" />
+        <line class="bp-line bp-dim3" x1="350" y1="262" x2="350" y2="268" stroke="currentColor" stroke-width="0.5"
+          opacity="0.4" />
+
+        <!-- Dimension arrows on side -->
+        <line class="bp-line bp-dim4" x1="45" y1="100" x2="45" y2="250" stroke="currentColor" stroke-width="0.5"
+          opacity="0.4" />
+        <line class="bp-line bp-dim5" x1="42" y1="100" x2="48" y2="100" stroke="currentColor" stroke-width="0.5"
+          opacity="0.4" />
+        <line class="bp-line bp-dim6" x1="42" y1="250" x2="48" y2="250" stroke="currentColor" stroke-width="0.5"
+          opacity="0.4" />
+      </svg>
+
+      <!-- Compliance check marks that appear after building draws -->
+      <div class="intro-checks">
+        <div class="intro-check c1"><span class="check-icon">✓</span><span class="check-label">Zoning</span></div>
+        <div class="intro-check c2"><span class="check-icon">✓</span><span class="check-label">Compliance</span></div>
+        <div class="intro-check c3"><span class="check-icon">✓</span><span class="check-label">Fire Code</span></div>
+      </div>
+    </div>
+
+    <!-- Brand text -->
+    <div class="intro-brand">
+      <h1 class="intro-logo">
+        <span class="intro-logo-text">BuildFaster</span><span class="intro-logo-dot">.ai</span>
+      </h1>
+      <p class="intro-tagline">AI-Powered Permit Intelligence</p>
+      <div class="intro-loader">
+        <div class="intro-loader-fill"></div>
+      </div>
+    </div>
+
+    <!-- Floating particles -->
+    <div class="intro-particles">
+      <span class="particle p1"></span>
+      <span class="particle p2"></span>
+      <span class="particle p3"></span>
+      <span class="particle p4"></span>
+      <span class="particle p5"></span>
+      <span class="particle p6"></span>
+      <span class="particle p7"></span>
+      <span class="particle p8"></span>
+    </div>
+  </div>
 
   <!-- ───────── SIDEBAR ───────── -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-icon">
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <rect x="2" y="2" width="24" height="24" rx="6" stroke="url(#brandGrad)" stroke-width="2.5"/>
-          <path d="M9 14h10M14 9v10" stroke="url(#brandGrad)" stroke-width="2" stroke-linecap="round"/>
-          <defs><linearGradient id="brandGrad" x1="2" y1="2" x2="26" y2="26"><stop stop-color="#60A5FA"/><stop offset="1" stop-color="#818CF8"/></linearGradient></defs>
+          <rect x="2" y="2" width="24" height="24" rx="6" stroke="url(#brandGrad)" stroke-width="2.5" />
+          <path d="M9 14h10M14 9v10" stroke="url(#brandGrad)" stroke-width="2" stroke-linecap="round" />
+          <defs>
+            <linearGradient id="brandGrad" x1="2" y1="2" x2="26" y2="26">
+              <stop stop-color="#60A5FA" />
+              <stop offset="1" stop-color="#818CF8" />
+            </linearGradient>
+          </defs>
         </svg>
       </div>
       <div>
@@ -32,21 +147,15 @@
 
     <nav class="sidebar-nav">
       <a href="#" class="nav-item active" id="nav-dashboard">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+          <rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+          <rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+          <rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+        </svg>
         <span>Dashboard</span>
       </a>
-      <a href="#" class="nav-item" id="nav-projects">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 6l7-4 7 4v8l-7 4-7-4V6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 6l7 4m0 0l7-4m-7 4v8" stroke="currentColor" stroke-width="1.5"/></svg>
-        <span>Projects</span>
-      </a>
-      <a href="#" class="nav-item" id="nav-reports">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 3h8l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v4h4M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span>Reports</span>
-      </a>
-      <a href="#" class="nav-item" id="nav-settings">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2m0 12v2m-5.66-3.34l1.42-1.42m8.48-8.48l1.42-1.42M2 10h2m12 0h2m-3.34 5.66l-1.42-1.42M5.76 5.76L4.34 4.34" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span>Settings</span>
-      </a>
+
     </nav>
 
     <div class="sidebar-footer">
@@ -64,17 +173,26 @@
     <header class="topbar">
       <div class="topbar-left">
         <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
         </button>
         <h1 class="page-title">Dashboard</h1>
       </div>
       <div class="topbar-right">
         <div class="search-box" id="searchBox">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5" />
+            <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
           <input type="text" placeholder="Search projects…" id="searchInput" />
         </div>
         <button class="icon-btn" id="notifBtn" aria-label="Notifications">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 00-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 00-5-5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 16a2 2 0 004 0" stroke="currentColor" stroke-width="1.5"/></svg>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2a5 5 0 00-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 00-5-5z" stroke="currentColor" stroke-width="1.5"
+              stroke-linejoin="round" />
+            <path d="M8 16a2 2 0 004 0" stroke="currentColor" stroke-width="1.5" />
+          </svg>
           <span class="notif-badge">3</span>
         </button>
         <div class="avatar" id="avatarBtn">AH</div>
@@ -84,371 +202,476 @@
     <!-- CONTENT AREA -->
     <div class="content">
       <header class="dashboard-header">
-          <div>
-            <h1 class="dashboard-title">Project Dashboard</h1>
-            <p class="dashboard-subtitle">Real-time compliance intelligence for <span id="currentProject">Downtown High-Rise V2</span></p>
-          </div>
-          <div class="header-actions">
-            <!-- Tab Navigation -->
-            <div class="tab-nav">
-              <button class="tab-btn active" data-tab="summary">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                Summary
-              </button>
-              <button class="tab-btn" data-tab="visualizer">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                3D Visualizer
-              </button>
-            </div>
-            <button class="btn btn-secondary">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Export Report
+        <div>
+          <h1 class="dashboard-title">Project Dashboard</h1>
+          <p class="dashboard-subtitle">Real-time compliance intelligence for <span id="currentProject">Downtown
+              High-Rise V2</span></p>
+        </div>
+        <div class="header-actions">
+          <!-- Tab Navigation -->
+          <div class="tab-nav">
+            <button class="tab-btn active" data-tab="summary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              Summary
+            </button>
+            <button class="tab-btn" data-tab="visualizer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                <line x1="12" y1="22.08" x2="12" y2="12" />
+              </svg>
+              3D Visualizer
             </button>
           </div>
-        </header>
+          <button class="btn btn-secondary" id="exportReportBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export Report
+          </button>
+        </div>
+      </header>
 
-        <!-- ── TAB CONTENT: SUMMARY ── -->
-        <div id="tab-summary" class="tab-pane active">
-          <div class="dashboard-grid">
+      <!-- ── TAB CONTENT: SUMMARY ── -->
+      <div id="tab-summary" class="tab-pane active">
+        <div class="dashboard-grid">
 
-      <!-- ── ROW 1: Upload + Compliance Score ── -->
-      <div class="grid grid-upload-row">
+          <!-- ── ROW 1: Upload + Compliance Score ── -->
+          <div class="grid grid-upload-row">
 
-        <!-- Blueprint Upload Card -->
-        <section class="card card-upload" id="uploadCard">
-          <div class="card-header">
-            <h2 class="card-title">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 14V4m0 0L6 8m4-4l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14v2a1 1 0 001 1h12a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              Upload Blueprint
-            </h2>
-            <span class="badge badge-info" id="uploadBadge">Step 1</span>
-          </div>
+            <!-- Blueprint Upload Card -->
+            <section class="card card-upload" id="uploadCard">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 14V4m0 0L6 8m4-4l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <path d="M3 14v2a1 1 0 001 1h12a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" />
+                  </svg>
+                  Upload Blueprint
+                </h2>
+                <span class="badge badge-info" id="uploadBadge">Step 1</span>
+              </div>
 
-          <!-- Drop Zone -->
-          <div class="upload-zone" id="uploadZone">
-            <div class="upload-icon">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="22" stroke="url(#uploadGrad)" stroke-width="2" stroke-dasharray="6 4"/>
-                <path d="M24 32V18m0 0l-6 6m6-6l6 6" stroke="url(#uploadGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <defs><linearGradient id="uploadGrad" x1="2" y1="2" x2="46" y2="46"><stop stop-color="#60A5FA"/><stop offset="1" stop-color="#818CF8"/></linearGradient></defs>
-              </svg>
-            </div>
-            <p class="upload-text">Drop blueprint PDF here or <span class="upload-browse" id="uploadBrowse" role="button" tabindex="0">browse files</span></p>
-            <p class="upload-hint">Supports PDF, DWG, IFC — up to 100 MB</p>
-            <input type="file" id="fileInput" accept=".pdf,.dwg,.ifc" hidden />
-          </div>
+              <!-- Drop Zone -->
+              <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="22" stroke="url(#uploadGrad)" stroke-width="2" stroke-dasharray="6 4" />
+                    <path d="M24 32V18m0 0l-6 6m6-6l6 6" stroke="url(#uploadGrad)" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" />
+                    <defs>
+                      <linearGradient id="uploadGrad" x1="2" y1="2" x2="46" y2="46">
+                        <stop stop-color="#60A5FA" />
+                        <stop offset="1" stop-color="#818CF8" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+                <p class="upload-text">Drop blueprint PDF here or <span class="upload-browse" id="uploadBrowse"
+                    role="button" tabindex="0">browse files</span></p>
+                <p class="upload-hint">Supports PDF, DWG, IFC — up to 100 MB</p>
+                <input type="file" id="fileInput" accept=".pdf,.dwg,.ifc" hidden />
+              </div>
 
-          <!-- Upload Progress -->
-          <div class="upload-progress-area hidden" id="uploadProgressArea">
-            <div class="upload-progress-header">
-              <div class="upload-progress-file">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 3h8l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v4h4" stroke="currentColor" stroke-width="1.5"/></svg>
-                <div>
-                  <span class="file-name" id="progressFileName">—</span>
-                  <span class="file-size" id="progressFileSize">—</span>
+              <!-- Upload Progress -->
+              <div class="upload-progress-area hidden" id="uploadProgressArea">
+                <div class="upload-progress-header">
+                  <div class="upload-progress-file">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M4 3h8l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor"
+                        stroke-width="1.5" />
+                      <path d="M12 3v4h4" stroke="currentColor" stroke-width="1.5" />
+                    </svg>
+                    <div>
+                      <span class="file-name" id="progressFileName">—</span>
+                      <span class="file-size" id="progressFileSize">—</span>
+                    </div>
+                  </div>
+                  <span class="upload-pct" id="uploadPct">0%</span>
+                </div>
+                <div class="upload-progress-track">
+                  <div class="upload-progress-fill" id="uploadProgressFill"></div>
+                </div>
+                <p class="upload-status-text" id="uploadStatusText">Uploading…</p>
+              </div>
+
+              <!-- Uploaded File (success state) -->
+              <div class="uploaded-file hidden" id="uploadedFile">
+                <div class="file-info">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 3h8l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor"
+                      stroke-width="1.5" />
+                    <path d="M12 3v4h4" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                  <div>
+                    <span class="file-name" id="fileName">—</span>
+                    <span class="file-size" id="fileSize">—</span>
+                  </div>
+                </div>
+                <div class="file-actions">
+                  <span class="badge badge-success" id="uploadStatusBadge">Uploaded</span>
+                  <button class="file-remove" id="fileRemove" aria-label="Remove file">✕</button>
                 </div>
               </div>
-              <span class="upload-pct" id="uploadPct">0%</span>
-            </div>
-            <div class="upload-progress-track">
-              <div class="upload-progress-fill" id="uploadProgressFill"></div>
-            </div>
-            <p class="upload-status-text" id="uploadStatusText">Uploading…</p>
-          </div>
 
-          <!-- Uploaded File (success state) -->
-          <div class="uploaded-file hidden" id="uploadedFile">
-            <div class="file-info">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 3h8l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v4h4" stroke="currentColor" stroke-width="1.5"/></svg>
-              <div>
-                <span class="file-name" id="fileName">—</span>
-                <span class="file-size" id="fileSize">—</span>
+              <!-- Analyzing Overlay -->
+              <div class="analyzing-overlay hidden" id="analyzingOverlay">
+                <div class="analyzing-content">
+                  <div class="analyzing-spinner">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                      <circle cx="24" cy="24" r="20" stroke="var(--surface-3)" stroke-width="3" fill="none" />
+                      <path d="M24 4a20 20 0 0 1 20 20" stroke="url(#analyzeGrad)" stroke-width="3"
+                        stroke-linecap="round" fill="none">
+                        <animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="1s"
+                          repeatCount="indefinite" />
+                      </path>
+                      <defs>
+                        <linearGradient id="analyzeGrad" x1="24" y1="4" x2="44" y2="24">
+                          <stop stop-color="#60A5FA" />
+                          <stop offset="1" stop-color="#818CF8" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+                  <p class="analyzing-title">AI agents reviewing plans…</p>
+                  <p class="analyzing-sub" id="analyzingSub">Initializing analysis pipeline</p>
+                  <div class="analyzing-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="file-actions">
-              <span class="badge badge-success" id="uploadStatusBadge">Uploaded</span>
-              <button class="file-remove" id="fileRemove" aria-label="Remove file">✕</button>
-            </div>
-          </div>
 
-          <!-- Analyzing Overlay -->
-          <div class="analyzing-overlay hidden" id="analyzingOverlay">
-            <div class="analyzing-content">
-              <div class="analyzing-spinner">
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                  <circle cx="24" cy="24" r="20" stroke="var(--surface-3)" stroke-width="3" fill="none"/>
-                  <path d="M24 4a20 20 0 0 1 20 20" stroke="url(#analyzeGrad)" stroke-width="3" stroke-linecap="round" fill="none">
-                    <animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="1s" repeatCount="indefinite"/>
-                  </path>
-                  <defs><linearGradient id="analyzeGrad" x1="24" y1="4" x2="44" y2="24"><stop stop-color="#60A5FA"/><stop offset="1" stop-color="#818CF8"/></linearGradient></defs>
+            </section>
+
+            <!-- Compliance Score -->
+            <section class="card card-score" id="scoreCard">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M10 6v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                  Compliance Score
+                </h2>
+                <span class="badge badge-neutral">Overall</span>
+              </div>
+              <div class="score-ring-wrapper">
+                <svg class="score-ring" viewBox="0 0 160 160">
+                  <circle cx="80" cy="80" r="70" stroke="var(--surface-3)" stroke-width="10" fill="none" />
+                  <circle class="score-ring-progress" id="scoreRingProgress" cx="80" cy="80" r="70"
+                    stroke="url(#scoreGrad)" stroke-width="10" fill="none" stroke-linecap="round"
+                    stroke-dasharray="439.82" stroke-dashoffset="439.82" transform="rotate(-90 80 80)" />
+                  <defs>
+                    <linearGradient id="scoreGrad" x1="0" y1="0" x2="160" y2="160">
+                      <stop stop-color="#34D399" />
+                      <stop offset="1" stop-color="#60A5FA" />
+                    </linearGradient>
+                  </defs>
                 </svg>
+                <div class="score-value">
+                  <span class="score-num" id="scoreNum">—</span>
+                  <span class="score-label">/ 100</span>
+                </div>
               </div>
-              <p class="analyzing-title">AI agents reviewing plans…</p>
-              <p class="analyzing-sub" id="analyzingSub">Initializing analysis pipeline</p>
-              <div class="analyzing-dots">
-                <span></span><span></span><span></span>
+              <div class="score-breakdown" id="scoreBreakdown">
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Zoning</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="zoneFill" style="width:0%"></div>
+                  </div>
+                  <span class="breakdown-val" id="zoneVal">—</span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Building Code</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="codeFill" style="width:0%"></div>
+                  </div>
+                  <span class="breakdown-val" id="codeVal">—</span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Fire Safety</span>
+                  <div class="breakdown-bar">
+                    <div class="breakdown-fill" id="fireFill" style="width:0%"></div>
+                  </div>
+                  <span class="breakdown-val" id="fireVal">—</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ── ROW 2: Agent Cards ── -->
+          <section class="section-agents">
+            <div class="section-header">
+              <h2 class="section-title">AI Agents</h2>
+              <span class="badge badge-glow" id="agentBadge">Idle</span>
+            </div>
+            <div class="grid grid-agents" id="agentGrid">
+
+              <!-- Agent: Zoning Librarian -->
+              <div class="card card-agent" id="agent-zoning" data-agent="zoning">
+                <div class="agent-header">
+                  <div class="agent-avatar agent-avatar-blue">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor"
+                        stroke-width="1.5" />
+                      <path d="M8 7h8M8 11h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="agent-name">Zoning Librarian</h3>
+                    <p class="agent-role">Zoning & Land-Use Research</p>
+                  </div>
+                  <span class="agent-status" id="status-zoning">
+                    <span class="status-indicator"></span>
+                    <span>Idle</span>
+                  </span>
+                </div>
+                <div class="agent-progress-bar">
+                  <div class="agent-progress-fill" id="progress-zoning"></div>
+                </div>
+                <div class="agent-live-status hidden" id="live-zoning">
+                  <div class="live-indicator"><span></span><span></span><span></span></div>
+                  <p class="live-text" id="live-text-zoning">Initializing…</p>
+                </div>
+                <p class="agent-desc" id="desc-zoning">Cross-references project plans against municipal zoning
+                  ordinances, setback requirements, and land-use restrictions.</p>
+                <div class="agent-stats">
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-zoning-checks">—</span>
+                    <span class="stat-label">Checks</span>
+                  </div>
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-zoning-issues">—</span>
+                    <span class="stat-label">Issues</span>
+                  </div>
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-zoning-time">—</span>
+                    <span class="stat-label">Time</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Agent: Compliance Officer -->
+              <div class="card card-agent" id="agent-compliance" data-agent="compliance">
+                <div class="agent-header">
+                  <div class="agent-avatar agent-avatar-emerald">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="agent-name">Compliance Officer</h3>
+                    <p class="agent-role">Building Code Enforcement</p>
+                  </div>
+                  <span class="agent-status" id="status-compliance">
+                    <span class="status-indicator"></span>
+                    <span>Idle</span>
+                  </span>
+                </div>
+                <div class="agent-progress-bar">
+                  <div class="agent-progress-fill" id="progress-compliance"></div>
+                </div>
+                <div class="agent-live-status hidden" id="live-compliance">
+                  <div class="live-indicator"><span></span><span></span><span></span></div>
+                  <p class="live-text" id="live-text-compliance">Initializing…</p>
+                </div>
+                <p class="agent-desc" id="desc-compliance">Validates structural, electrical, and plumbing plans against
+                  IBC, NEC, and local building code amendments.</p>
+                <div class="agent-stats">
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-compliance-checks">—</span>
+                    <span class="stat-label">Checks</span>
+                  </div>
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-compliance-issues">—</span>
+                    <span class="stat-label">Issues</span>
+                  </div>
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-compliance-time">—</span>
+                    <span class="stat-label">Time</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Agent: Diplomat -->
+              <div class="card card-agent" id="agent-diplomat" data-agent="diplomat">
+                <div class="agent-header">
+                  <div class="agent-avatar agent-avatar-amber">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5" />
+                      <path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                      <path d="M15 3.5a4 4 0 010 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                      <path d="M19 15a4 4 0 012 3.5V21" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="agent-name">Diplomat</h3>
+                    <p class="agent-role">Stakeholder Communication</p>
+                  </div>
+                  <span class="agent-status" id="status-diplomat">
+                    <span class="status-indicator"></span>
+                    <span>Idle</span>
+                  </span>
+                </div>
+                <div class="agent-progress-bar">
+                  <div class="agent-progress-fill" id="progress-diplomat"></div>
+                </div>
+                <div class="agent-live-status hidden" id="live-diplomat">
+                  <div class="live-indicator"><span></span><span></span><span></span></div>
+                  <p class="live-text" id="live-text-diplomat">Initializing…</p>
+                </div>
+                <p class="agent-desc" id="desc-diplomat">Generates plain-language summaries and revision recommendations
+                  for architects, developers, and reviewers.</p>
+                <div class="agent-stats">
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-diplomat-checks">—</span>
+                    <span class="stat-label">Checks</span>
+                  </div>
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-diplomat-issues">—</span>
+                    <span class="stat-label">Issues</span>
+                  </div>
+                  <div class="agent-stat">
+                    <span class="stat-val" id="stat-diplomat-time">—</span>
+                    <span class="stat-label">Time</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- ── ROW 3: Violations + Suggestions ── -->
+          <div class="grid grid-bottom-row">
+
+            <!-- Violations List -->
+            <section class="card card-violations" id="violationsCard">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 2L1 18h18L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                    <path d="M10 8v4m0 2.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                  Violations
+                </h2>
+                <div class="violation-filters">
+                  <button class="filter-btn active" data-filter="all">All</button>
+                  <button class="filter-btn" data-filter="critical">Critical</button>
+                  <button class="filter-btn" data-filter="warning">Warning</button>
+                  <button class="filter-btn" data-filter="info">Info</button>
+                </div>
+              </div>
+              <div class="violations-list" id="violationsList">
+                <div class="empty-state" id="violationsEmpty">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="var(--text-muted)" stroke-width="1.5"
+                      stroke-dasharray="4 3" />
+                    <path d="M14 20l4 4 8-8" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                  <p>No violations yet — upload a project to begin analysis.</p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Suggestions Panel -->
+            <section class="card card-suggestions" id="suggestionsCard">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="8" r="5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M8 13v2a2 2 0 004 0v-2" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M10 5v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                  AI Suggestions
+                </h2>
+                <span class="badge badge-accent" id="suggestionCount">0</span>
+              </div>
+              <div class="suggestions-list" id="suggestionsList">
+                <div class="empty-state" id="suggestionsEmpty">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="16" r="10" stroke="var(--text-muted)" stroke-width="1.5" />
+                    <path d="M16 26v4a4 4 0 008 0v-4" stroke="var(--text-muted)" stroke-width="1.5" />
+                  </svg>
+                  <p>Suggestions will appear once agents finish analysis.</p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </div><!-- .dashboard-grid -->
+      </div><!-- .tab-pane #tab-summary -->
+
+      <!-- ── TAB CONTENT: BLUEPRINT VISUALIZER ── -->
+      <div id="tab-visualizer" class="tab-pane">
+        <div class="visualizer-container">
+          <div class="visualizer-sidebar">
+            <h3 class="visualizer-title">Blueprint Viewer</h3>
+            <p class="visualizer-desc">View uploaded floor plan pages. Zoom and scroll to inspect details.</p>
+
+            <div class="visualizer-stats">
+              <div class="v-stat">
+                <span class="v-stat-label">Pages</span>
+                <span class="v-stat-val" id="totalPins">0</span>
+              </div>
+              <div class="v-stat">
+                <span class="v-stat-label">Current</span>
+                <span class="v-stat-val" id="selectedPinName">—</span>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+              <button class="btn btn-primary" id="pdfZoomIn" style="padding:8px 12px; font-size:.8rem;">+ Zoom
+                In</button>
+              <button class="btn btn-primary" id="pdfZoomOut" style="padding:8px 12px; font-size:.8rem;">– Zoom
+                Out</button>
+              <button class="btn btn-primary" id="resetCamera" style="padding:8px 12px; font-size:.8rem;">↺ Reset
+                Zoom</button>
+            </div>
+
+            <div class="visualizer-legend" style="margin-top:auto;">
+              <div class="legend-item"><span class="dot dot-critical"></span> Violation Zone</div>
+              <div class="legend-item"><span class="dot dot-warning"></span> Suggestion Zone</div>
+            </div>
+          </div>
+
+          <div class="visualizer-main"
+            style="overflow:auto; display:flex; flex-direction:column; align-items:center; padding:20px; gap:16px;">
+            <div id="blueprintViewer"
+              style="width:100%; display:flex; flex-direction:column; align-items:center; gap:16px;">
+              <div class="empty-state" id="pdfEmptyState">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                  <circle cx="20" cy="20" r="18" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4 3" />
+                  <path d="M13 16h14M13 22h10M13 28h7" stroke="var(--text-muted)" stroke-width="1.5"
+                    stroke-linecap="round" />
+                </svg>
+                <p>Upload a blueprint PDF to preview the floor plan here.</p>
               </div>
             </div>
           </div>
-
-        </section>
-
-        <!-- Compliance Score -->
-        <section class="card card-score" id="scoreCard">
-          <div class="card-header">
-            <h2 class="card-title">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 18a8 8 0 100-16 8 8 0 000 16z" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              Compliance Score
-            </h2>
-            <span class="badge badge-neutral">Overall</span>
-          </div>
-          <div class="score-ring-wrapper">
-            <svg class="score-ring" viewBox="0 0 160 160">
-              <circle cx="80" cy="80" r="70" stroke="var(--surface-3)" stroke-width="10" fill="none"/>
-              <circle class="score-ring-progress" id="scoreRingProgress" cx="80" cy="80" r="70" stroke="url(#scoreGrad)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="439.82" stroke-dashoffset="439.82" transform="rotate(-90 80 80)"/>
-              <defs><linearGradient id="scoreGrad" x1="0" y1="0" x2="160" y2="160"><stop stop-color="#34D399"/><stop offset="1" stop-color="#60A5FA"/></linearGradient></defs>
-            </svg>
-            <div class="score-value">
-              <span class="score-num" id="scoreNum">—</span>
-              <span class="score-label">/ 100</span>
-            </div>
-          </div>
-          <div class="score-breakdown" id="scoreBreakdown">
-            <div class="breakdown-item">
-              <span class="breakdown-label">Zoning</span>
-              <div class="breakdown-bar"><div class="breakdown-fill" id="zoneFill" style="width:0%"></div></div>
-              <span class="breakdown-val" id="zoneVal">—</span>
-            </div>
-            <div class="breakdown-item">
-              <span class="breakdown-label">Building Code</span>
-              <div class="breakdown-bar"><div class="breakdown-fill" id="codeFill" style="width:0%"></div></div>
-              <span class="breakdown-val" id="codeVal">—</span>
-            </div>
-            <div class="breakdown-item">
-              <span class="breakdown-label">Fire Safety</span>
-              <div class="breakdown-bar"><div class="breakdown-fill" id="fireFill" style="width:0%"></div></div>
-              <span class="breakdown-val" id="fireVal">—</span>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- ── ROW 2: Agent Cards ── -->
-      <section class="section-agents">
-        <div class="section-header">
-          <h2 class="section-title">AI Agents</h2>
-          <span class="badge badge-glow" id="agentBadge">Idle</span>
         </div>
-        <div class="grid grid-agents" id="agentGrid">
-
-          <!-- Agent: Zoning Librarian -->
-          <div class="card card-agent" id="agent-zoning" data-agent="zoning">
-            <div class="agent-header">
-              <div class="agent-avatar agent-avatar-blue">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" stroke-width="1.5"/><path d="M8 7h8M8 11h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-              <div>
-                <h3 class="agent-name">Zoning Librarian</h3>
-                <p class="agent-role">Zoning & Land-Use Research</p>
-              </div>
-              <span class="agent-status" id="status-zoning">
-                <span class="status-indicator"></span>
-                Idle
-              </span>
-            </div>
-            <div class="agent-progress-bar"><div class="agent-progress-fill" id="progress-zoning"></div></div>
-            <div class="agent-live-status hidden" id="live-zoning">
-              <div class="live-indicator"><span></span><span></span><span></span></div>
-              <p class="live-text" id="live-text-zoning">Initializing…</p>
-            </div>
-            <p class="agent-desc" id="desc-zoning">Cross-references project plans against municipal zoning ordinances, setback requirements, and land-use restrictions.</p>
-            <div class="agent-stats">
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-zoning-checks">—</span>
-                <span class="stat-label">Checks</span>
-              </div>
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-zoning-issues">—</span>
-                <span class="stat-label">Issues</span>
-              </div>
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-zoning-time">—</span>
-                <span class="stat-label">Time</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Agent: Compliance Officer -->
-          <div class="card card-agent" id="agent-compliance" data-agent="compliance">
-            <div class="agent-header">
-              <div class="agent-avatar agent-avatar-emerald">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5"/></svg>
-              </div>
-              <div>
-                <h3 class="agent-name">Compliance Officer</h3>
-                <p class="agent-role">Building Code Enforcement</p>
-              </div>
-              <span class="agent-status" id="status-compliance">
-                <span class="status-indicator"></span>
-                Idle
-              </span>
-            </div>
-            <div class="agent-progress-bar"><div class="agent-progress-fill" id="progress-compliance"></div></div>
-            <div class="agent-live-status hidden" id="live-compliance">
-              <div class="live-indicator"><span></span><span></span><span></span></div>
-              <p class="live-text" id="live-text-compliance">Initializing…</p>
-            </div>
-            <p class="agent-desc" id="desc-compliance">Validates structural, electrical, and plumbing plans against IBC, NEC, and local building code amendments.</p>
-            <div class="agent-stats">
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-compliance-checks">—</span>
-                <span class="stat-label">Checks</span>
-              </div>
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-compliance-issues">—</span>
-                <span class="stat-label">Issues</span>
-              </div>
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-compliance-time">—</span>
-                <span class="stat-label">Time</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Agent: Diplomat -->
-          <div class="card card-agent" id="agent-diplomat" data-agent="diplomat">
-            <div class="agent-header">
-              <div class="agent-avatar agent-avatar-amber">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 3.5a4 4 0 010 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M19 15a4 4 0 012 3.5V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-              <div>
-                <h3 class="agent-name">Diplomat</h3>
-                <p class="agent-role">Stakeholder Communication</p>
-              </div>
-              <span class="agent-status" id="status-diplomat">
-                <span class="status-indicator"></span>
-                Idle
-              </span>
-            </div>
-            <div class="agent-progress-bar"><div class="agent-progress-fill" id="progress-diplomat"></div></div>
-            <div class="agent-live-status hidden" id="live-diplomat">
-              <div class="live-indicator"><span></span><span></span><span></span></div>
-              <p class="live-text" id="live-text-diplomat">Initializing…</p>
-            </div>
-            <p class="agent-desc" id="desc-diplomat">Generates plain-language summaries and revision recommendations for architects, developers, and reviewers.</p>
-            <div class="agent-stats">
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-diplomat-checks">—</span>
-                <span class="stat-label">Checks</span>
-              </div>
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-diplomat-issues">—</span>
-                <span class="stat-label">Issues</span>
-              </div>
-              <div class="agent-stat">
-                <span class="stat-val" id="stat-diplomat-time">—</span>
-                <span class="stat-label">Time</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ── ROW 3: Violations + Suggestions ── -->
-      <div class="grid grid-bottom-row">
-
-        <!-- Violations List -->
-        <section class="card card-violations" id="violationsCard">
-          <div class="card-header">
-            <h2 class="card-title">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L1 18h18L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8v4m0 2.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              Violations
-            </h2>
-            <div class="violation-filters">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="critical">Critical</button>
-              <button class="filter-btn" data-filter="warning">Warning</button>
-              <button class="filter-btn" data-filter="info">Info</button>
-            </div>
-          </div>
-          <div class="violations-list" id="violationsList">
-            <div class="empty-state" id="violationsEmpty">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M14 20l4 4 8-8" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <p>No violations yet — upload a project to begin analysis.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Suggestions Panel -->
-        <section class="card card-suggestions" id="suggestionsCard">
-          <div class="card-header">
-            <h2 class="card-title">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M8 13v2a2 2 0 004 0v-2" stroke="currentColor" stroke-width="1.5"/><path d="M10 5v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              AI Suggestions
-            </h2>
-            <span class="badge badge-accent" id="suggestionCount">0</span>
-          </div>
-          <div class="suggestions-list" id="suggestionsList">
-            <div class="empty-state" id="suggestionsEmpty">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="10" stroke="var(--text-muted)" stroke-width="1.5"/><path d="M16 26v4a4 4 0 008 0v-4" stroke="var(--text-muted)" stroke-width="1.5"/></svg>
-              <p>Suggestions will appear once agents finish analysis.</p>
-            </div>
-          </div>
-        </section>
       </div>
-
-    </div><!-- .dashboard-grid -->
-  </div><!-- .tab-pane #tab-summary -->
-
-  <!-- ── TAB CONTENT: 3D VISUALIZER ── -->
-  <div id="tab-visualizer" class="tab-pane">
-    <div class="visualizer-container">
-      <div class="visualizer-sidebar">
-        <h3 class="visualizer-title">Spatial Analysis</h3>
-        <p class="visualizer-desc">Review violations in 3D architectural context. Click on pins to see details.</p>
-        
-        <div class="visualizer-stats">
-          <div class="v-stat">
-            <span class="v-stat-label">Total Pins</span>
-            <span class="v-stat-val" id="totalPins">0</span>
-          </div>
-          <div class="v-stat">
-            <span class="v-stat-label">Selected</span>
-            <span class="v-stat-val" id="selectedPinName">—</span>
-          </div>
-        </div>
-
-        <div class="visualizer-legend">
-          <div class="legend-item"><span class="dot dot-critical"></span> Violation</div>
-          <div class="legend-item"><span class="dot dot-warning"></span> Suggestion</div>
-        </div>
-      </div>
-
-      <div class="visualizer-main">
-        <model-viewer id="blueprintViewer" 
-          src="http://localhost:8000/static/building.glb" 
-          camera-controls 
-          auto-rotate 
-          shadow-intensity="1" 
-          environment-image="neutral" 
-          exposure="1.2"
-          ar-modes="webxr scene-viewer quick-look"
-          interaction-prompt="auto"
-          style="width: 100%; height: 100%; background-color: var(--surface-1);">
-          
-          <div class="visualizer-overlay">
-            <button class="btn-visual-action" id="resetCamera">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-            </button>
-          </div>
-        </model-viewer>
-      </div>
-    </div>
-  </div>
 
   </main>
 
   <script src="app.js"></script>
 </body>
+
 </html>
